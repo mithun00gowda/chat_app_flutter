@@ -2,7 +2,7 @@ class MessageModels {
   String id;
   String text;
   String? photoUrl;
-  DateTime sentAt;
+  String sentAt;
   Author author;
 
   MessageModels({
@@ -13,14 +13,22 @@ class MessageModels {
     required this.author,
   });
 
-
+  factory MessageModels.fromJson(Map<String, dynamic> json) {
+    return MessageModels(
+      id: json['id'],
+      text: json['text'],
+      photoUrl: json['image'],
+      sentAt: json['createdAt'].toString(),
+      author: Author.fromJson(json['author']),
+    );
+  }
 }
 
 class Author {
   String userName;
   Author({required this.userName});
 
-  factory Author.fromJson(Map<String,dynamic> json){
+  factory Author.fromJson(Map<String, dynamic> json) {
     return Author(userName: json['username']);
   }
 }

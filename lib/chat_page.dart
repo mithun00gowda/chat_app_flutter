@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chat_app/widget/chat_bubble.dart';
 import 'package:chat_app/widget/chat_input.dart';
 import 'package:flutter/material.dart';
@@ -5,46 +7,44 @@ import 'package:flutter/services.dart';
 
 import 'models/message_models.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
 
-  _loadInitialMessage() async {
-    final response =await rootBundle.loadString('assets/mock_messages.json');
-    print(response);
+class _ChatPageState extends State<ChatPage> {
+  List<MessageModels> message = [];
+  Future<void> _loadInitialMessage() async {
+    final response = await rootBundle.loadString('assets/mock_messages.json');
+
+    final List<dynamic> decodeJsonList = jsonDecode(response) as List;
+
+    final List<MessageModels> _chatMessages = decodeJsonList.map((listItem) {
+      return MessageModels.fromJson(listItem);
+    }).toList();
+
+    print('Length of the list => ${_chatMessages.length}');
+
+    setState(() {
+      message = _chatMessages;
+    });
+    // print(response);
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    _loadInitialMessage();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final userName = ModalRoute.of(context)!.settings.arguments;
-    _loadInitialMessage();
-    final message = [
-      MessageModels(
-        id: '1234',
-        text: 'Hi i AM Mithun',
-        sentAt: DateTime.now(),
-        photoUrl: 'https://neilpatel.com/wp-content/uploads/2019/08/google.jpg',
-        author: Author(userName: '$userName'),
-      ),
-      MessageModels(
-        id: '1235',
-        text: 'Hi im Sachin',
-        sentAt: DateTime.now(),
-        author: Author(userName: 'sachin'),
-      ),
-      MessageModels(
-        id: '1236',
-        text: 'where are u',
-        sentAt: DateTime.now(),
-        author: Author(userName: 'sachin'),
-      ),
-      MessageModels(
-        id: '1237',
-        text: 'i m coming wait for me ',
-        photoUrl: 'https://neilpatel.com/wp-content/uploads/2019/08/google.jpg',
-        sentAt: DateTime.now(),
-        author: Author(userName: '$userName'),
-      ),
-    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Hi $userName'),
