@@ -19,7 +19,8 @@ class _ChatInputState extends State<ChatInput> {
 
   final _messageController = TextEditingController();
 
-  void sendMessage() {
+  Future<void> sendMessage() async {
+    String? userNameFromCatch = await context.read<AuthService>().getUserName();
     print(_messageController.text);
 
     final newChatMessage = MessageModels(
@@ -27,7 +28,7 @@ class _ChatInputState extends State<ChatInput> {
       text: _messageController.text,
       sentAt: DateTime.now().millisecondsSinceEpoch.toString(),
 
-      author: Author(userName: context.read<AuthService>().getUserName()),
+      author: Author(userName: userNameFromCatch.toString()),
     );
 
     if (_selectedImageUrl.isNotEmpty) {

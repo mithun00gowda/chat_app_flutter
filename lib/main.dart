@@ -4,8 +4,15 @@ import 'package:chat_app/provider/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(Provider(create: (_) => AuthService(),child: MyApp(),));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.init();
+  runApp(
+    ChangeNotifierProvider(
+      create: (BuildContext context) => AuthService(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -16,14 +23,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
+      theme: ThemeData(primarySwatch: Colors.yellow),
+      home: FutureBuilder(
+        future: context.read<AuthService>().isLoggedIn(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if(snapshot.connectionState == ConnectionState.done){
+            if(snapshot.hasData && snapshot.data!){
+              return ChatPage();
+            }
+            return LoginScreen();
+          }
 
-        primarySwatch: Colors.yellow,
+          return CircularProgressIndicator();
+        },
       ),
-      home: LoginScreen(),
-      routes: {
-        '/chat':(context) => ChatPage(),
-      },
+      routes: {'/chat': (context) => ChatPage()},
     );
   }
 }

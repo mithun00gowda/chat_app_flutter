@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'models/message_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
@@ -44,8 +45,6 @@ class _ChatPageState extends State<ChatPage> {
     print('something');
   }
 
-
-
   void onSubmitMessage(MessageModels model) {
     message.add(model);
     setState(() {});
@@ -61,8 +60,8 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userName = ModalRoute.of(context)!.settings.arguments;
-
+    final userName = context.watch<AuthService>().getUserName();
+    //   final userName = "mithun";
     return Scaffold(
       appBar: AppBar(
         title: Text('Hi $userName'),
@@ -71,6 +70,13 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           IconButton(
             onPressed: () {
+              context.read<AuthService>().updateUserName('newName');
+            },
+            icon: Icon(Icons.update),
+          ),
+          IconButton(
+            onPressed: () {
+              context.read<AuthService>().logOutUser();
               Navigator.pushReplacementNamed(context, '/');
             },
             icon: Icon(Icons.logout),
@@ -79,14 +85,15 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
         children: [
-
           Expanded(
             //create a dynamic sized list
             child: ListView.builder(
               itemCount: message.length,
               itemBuilder: (context, index) {
                 return ChatBubble(
-                  alignment: message[index].author.userName == context.read<AuthService>().getUserName()
+                  alignment:
+                      message[index].author.userName ==
+                          context.read<AuthService>().getUserName()
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   messageModels: message[index],

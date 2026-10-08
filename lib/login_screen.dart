@@ -1,4 +1,6 @@
+import 'package:chat_app/provider/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,10 +14,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void loginSignIn() {
+  Future<void> loginSignIn(BuildContext context) async{
     if (_formKey.currentState!.validate() && _formKey.currentState != null) {
       print(_userNameController.text);
       print(_passwordController.text);
+      await context.read<AuthService>().loginUser(_userNameController.text);
       Navigator.of(context).pushReplacementNamed(
         '/chat',
         arguments: _userNameController.text.trim(),
@@ -75,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Form(
               key: _formKey,
               child: Column(
@@ -123,7 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
-              onPressed: loginSignIn,
+              onPressed: (){
+                loginSignIn(context);
+              },
               child: Text(
                 'Sign In',
                 style: TextStyle(fontSize: 20, color: Colors.white),

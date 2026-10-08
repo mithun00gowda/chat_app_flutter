@@ -13,6 +13,8 @@ class ChatBubble extends StatelessWidget {
     bool isAuthor =
         messageModels.author.userName ==
         context.read<AuthService>().getUserName();
+    print('${messageModels.author.userName} and ${context.read<AuthService>().getUserName()}');
+    print(isAuthor);
     return Align(
       alignment: alignment,
       child: Container(
