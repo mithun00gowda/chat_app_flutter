@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -63,11 +64,18 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(
-              width: 100,
+            Container(
               height: 200,
-              child: Image.asset('assets/img.png', width: 100),
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: AssetImage('assets/img.png'),
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
+            SizedBox(height: 20,),
             Form(
               key: _formKey,
               child: Column(

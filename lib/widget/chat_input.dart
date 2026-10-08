@@ -1,25 +1,52 @@
+import 'package:chat_app/models/message_models.dart';
+import 'package:chat_app/widget/network_image_picker_body.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/auth_service.dart';
 
 class ChatInput extends StatefulWidget {
-  const ChatInput({super.key});
+  final Function(MessageModels) onSubmit;
+
+  ChatInput({super.key, required this.onSubmit});
 
   @override
   State<ChatInput> createState() => _ChatInputState();
 }
 
 class _ChatInputState extends State<ChatInput> {
-   final _messageController = TextEditingController();
+  String _selectedImageUrl = '';
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _messageController.dispose();
-    super.dispose();
-  }
+  final _messageController = TextEditingController();
 
-  void sendMessage(){
+  void sendMessage() {
     print(_messageController.text);
+
+    final newChatMessage = MessageModels(
+      id: "244",
+      text: _messageController.text,
+      sentAt: DateTime.now().millisecondsSinceEpoch.toString(),
+
+      author: Author(userName: context.read<AuthService>().getUserName()),
+    );
+
+    if (_selectedImageUrl.isNotEmpty) {
+      newChatMessage.photoUrl = _selectedImageUrl;
+    }
+
+    widget.onSubmit(newChatMessage);
+    _messageController.clear();
+    _selectedImageUrl = '';
+    setState(() {});
   }
+
+  void onImagePicked(String newImageUrl) {
+    setState(() {
+      _selectedImageUrl = newImageUrl;
+    });
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,23 +58,36 @@ class _ChatInputState extends State<ChatInput> {
       child: Row(
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return NetworkImagePickerBody(onImageSelected: onImagePicked);
+                },
+              );
+            },
             icon: Icon(Icons.add, color: Colors.white),
           ),
           Expanded(
-            child: TextField(
-              keyboardType: TextInputType.multiline,
-              maxLines: 3,
-              minLines: 1,
-              textCapitalization: TextCapitalization.sentences,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Type your message here',
-                hintStyle: TextStyle(color: Colors.grey),
-
-              ),
-              controller: _messageController,
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 3,
+                  minLines: 1,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Type your message here',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  controller: _messageController,
+                ),
+                if (_selectedImageUrl.isNotEmpty)
+                  Expanded(child: Image.network(_selectedImageUrl, width: 50)),
+              ],
             ),
           ),
           IconButton(

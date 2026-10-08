@@ -1,9 +1,11 @@
 import 'package:chat_app/chat_page.dart';
 import 'package:chat_app/login_screen.dart';
+import 'package:chat_app/provider/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(Provider(create: (_) => AuthService(),child: MyApp(),));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+
         primarySwatch: Colors.yellow,
       ),
       home: LoginScreen(),
